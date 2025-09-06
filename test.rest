@@ -1,0 +1,10 @@
+GET  http://localhost:3000
+
+
+###
+POST http://localhost:3000/api/submit/
+Content-Type: application/json
+
+{
+  "prompt": "Hello, how are you?"
+}
