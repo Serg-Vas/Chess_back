@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({
-  apiKey: "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",
+  apiKey: process.env.API_KEY || "",
 });
 
 export async function askClaude(prompt: string): Promise<ReadableStream> {
