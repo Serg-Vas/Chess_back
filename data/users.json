@@ -1,0 +1,24 @@
+[
+  {
+    "email": "qwerty@qwerty",
+    "password": "qwerty",
+    "history": [
+      {
+        "role": "user",
+        "content": "Мене звати Сергій"
+      },
+      {
+        "role": "assistant",
+        "content": "Привіт Сергій"
+      },
+      {
+        "role": "user",
+        "content": "як мене звуть?"
+      },
+      {
+        "role": "assistant",
+        "content": "Вас звуть Сергій."
+      }
+    ]
+  }
+]
