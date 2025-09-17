@@ -13,11 +13,139 @@
       },
       {
         "role": "user",
-        "content": "як мене звуть?"
+        "content": "привет, напомни, как меня зовут?"
       },
       {
         "role": "assistant",
-        "content": "Вас звуть Сергій."
+        "content": "Привет! Тебя зовут Сергий - ты представился в начале нашего разговора."
+      },
+      {
+        "role": "user",
+        "content": "hello"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello! How can I help you today?\n\nJust to note - you introduced yourself earlier as Sergiy (Сергій), and we've been chatting in both Ukrainian and Russian. Feel free to continue in whichever language you prefer!"
+      },
+      {
+        "role": "user",
+        "content": "hello"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello again! How are you doing? Is there something specific I can help you with today?"
+      },
+      {
+        "role": "user",
+        "content": "hello"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello! I notice you've said \"hello\" a few times now. Is everything alright? If you'd like to have a conversation or need help with something, I'm here to assist. Otherwise, if you're just testing or prefer to keep things simple, that's fine too!\n\nFeel free to ask me anything or let me know what's on your mind."
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi there! Still keeping it short and sweet, I see! 😊 \n\nIf you'd like to chat about something or have any questions, I'm all ears. Or if you're just saying hi to be friendly - well, hi to you too, Sergiy!"
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hey! You seem to be stuck in a greeting loop 😄 \n\nIs there anything particular you'd like to talk about or are you just enjoying saying hi? Either way is fine with me! If you need any help or want to discuss something, just let me know."
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi again, Sergiy! 👋 \n\nAt this point, I'm starting to think you either really love greetings, or perhaps you're testing something? If you're looking for a different response each time, I'm trying my best! 😊\n\nBut seriously, if you need help with anything or just want to have an actual conversation, I'm here and ready whenever you are."
+      },
+      {
+        "role": "user",
+        "content": "hi, and yes, i'm testing my wrapper so don't worry about my seemingly stupid prompts))"
+      },
+      {
+        "role": "assistant",
+        "content": "Haha, no worries at all, Sergiy! Thanks for letting me know - that makes much more sense now! 😄\n\nTesting wrappers can definitely lead to some repetitive and seemingly nonsensical conversations. Feel free to throw whatever test prompts you need my way - stupid, repetitive, random, whatever helps you debug or validate your wrapper's functionality. \n\nIs this a wrapper for API calls, or something else? Either way, happy testing! And let me know if you need me to respond in any particular way to help with your tests."
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi! Back to testing mode, I see! 🔧\n\nNo judgment here - keep those test prompts coming as needed for your wrapper. I'll keep responding naturally each time."
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi there! Still going strong with the testing! 💪\n\nHope your wrapper is behaving as expected. Let me know if you need any specific type of responses for your tests."
+      },
+      {
+        "role": "user",
+        "content": "it worked, i actually managed to get Input and Output tokens from our dialog so now i can calculate the billing"
+      },
+      {
+        "role": "assistant",
+        "content": "Awesome, congrats on getting it working! 🎉 \n\nThat's a really useful feature to have implemented - being able to track input and output tokens for billing purposes is essential, especially if you're building something that needs to manage API costs or pass them through to users.\n\nOut of curiosity, are you using this for a personal project or building something larger? And are you working with the OpenAI API, Anthropic's API, or something else?\n\nAlso, those repeated \"hi\" messages make perfect sense now - you needed consistent, predictable exchanges to verify your token counting was working correctly. Smart approach to testing!"
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi! Back to testing again, or just checking that everything's still working smoothly with your token tracking? \n\nEither way, I'm here for whatever test cases you need! 🧪"
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi! Testing continues, I see! \n\nYour wrapper seems to be working well if you're still successfully capturing those token counts. Nice work! 👍"
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi! Still collecting those token metrics? 📊\n\nHope the billing calculations are working out as expected!"
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi! Another test ping! \n\nYour token tracking system is getting a good workout today! 🏃‍♂️"
+      },
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi! Keep those tests coming! \n\nI'm just here being a reliable token generator for your wrapper. ⚙️"
+      },
+      {
+        "role": "user",
+        "content": "hi\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi! \n\nShort and sweet - perfect for clean token counting! ✨"
       }
     ]
   }

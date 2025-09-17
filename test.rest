@@ -1,3 +1,4 @@
+@API_KEY=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
 GET  http://localhost:3000
 
 
@@ -10,3 +11,20 @@ Content-Type: application/json
   "modelId": "claude-sonnet-4-20250514",
   "maxTokens": 200
 }
+###
+curl https://api.anthropic.com/v1/messages \
+     --header "x-api-key: {{API_KEY}}" \
+     --header "anthropic-version: 2023-06-01" \
+     --header "content-type: application/json" \
+     --data \
+'{
+    "model": "claude-3-7-sonnet-20250219",
+    "max_tokens": 3000,
+    "messages": [
+  {"role": "user", "content": "Hello there."},
+  {"role": "assistant", "content": "Hi, I''m Claude. How can I help you?"},
+  {"role": "user", "content": "Say hi"}
+]
+}'
+### usage.input_tokens
+### usage.output_tokens

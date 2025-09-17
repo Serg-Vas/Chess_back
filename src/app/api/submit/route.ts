@@ -1,17 +1,19 @@
 import { askClaude } from "../../api";
 
+const sessionsUsage: Record<string, any> = {};
+
 export async function POST(request: Request) {
   try {
-    const { email, prompt, modelId, maxTokens } = await request.json();
-    if (!email) return new Response("Missing email", { status: 400 });
-    if (!prompt) return new Response("Missing prompt", { status: 400 });
-    if (!modelId) return new Response("Missing modelId", { status: 400 });
-    if (!maxTokens) return new Response("Missing maxTokens", { status: 400 });
+    const { email, prompt, modelId, maxTokens, sessionId } = await request.json();
+    if (!email || !prompt || !modelId || !maxTokens || !sessionId) {
+      return new Response("Missing parameters", { status: 400 });
+    }
 
-    console.log("Received request:", { email, prompt, modelId, maxTokens });
+    const { stream, usagePromise } = await askClaude(email, prompt, modelId, maxTokens, sessionId);
 
-    const stream = await askClaude(email, prompt, modelId, maxTokens);
-    console.log("Stream created");
+    usagePromise.then((usage) => {
+      sessionsUsage[sessionId] = usage;
+    });
 
     return new Response(stream, {
       headers: {
@@ -20,7 +22,19 @@ export async function POST(request: Request) {
       },
     });
   } catch (err: any) {
-    console.error("Error in /submit:", err);
+    console.error(err);
     return new Response(`Internal Server Error: ${err.message}`, { status: 500 });
   }
+}
+
+// GET endpoint to fetch usage
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const sessionId = searchParams.get("sessionId");
+  if (!sessionId) return new Response("Missing sessionId", { status: 400 });
+
+  const usage = sessionsUsage[sessionId];
+  if (!usage) return new Response("Usage not ready yet", { status: 202 });
+
+  return Response.json(usage);
 }
