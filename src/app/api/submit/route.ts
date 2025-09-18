@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return new Response("Missing parameters", { status: 400 });
     }
 
-    const { stream, usagePromise } = await askClaude(email, prompt, modelId, maxTokens, sessionId);
+    const { stream, usagePromise } = await askClaude(email, prompt, modelId, maxTokens);
 
     usagePromise.then((usage) => {
       sessionsUsage[sessionId] = usage;

@@ -1,10 +1,14 @@
+// api.ts
 import Anthropic from "@anthropic-ai/sdk";
-import { readUsers, writeUsers, User } from "../lib/usersStore";
+import { readUsers, writeUsers } from "../lib/usersStore";
 
 const anthropic = new Anthropic({
   apiKey: process.env.API_KEY || "",
 });
 
+// ---------------------------------------------
+// 1️⃣ Streaming chat function (existing behavior)
+// ---------------------------------------------
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -15,7 +19,7 @@ export async function askClaude(
   prompt: string,
   modelId: string,
   maxTokens: number,
-  sessionId: string
+  // sessionId: string
 ): Promise<{ stream: ReadableStream; usagePromise: Promise<any> }> {
   const users = await readUsers();
   const user = users.find((u) => u.email === email);
@@ -47,7 +51,6 @@ export async function askClaude(
           }
         }
 
-        // After stream ends, get final usage
         const finalMessage = await claudeStream.finalMessage();
         history.push({ role: "assistant", content: assistantText });
         await writeUsers(users);
@@ -72,3 +75,33 @@ export async function askClaude(
   return { stream, usagePromise };
 }
 
+// ---------------------------------------------
+// 2️⃣ Single-response function (for chess moves)
+// ---------------------------------------------
+export async function askClaudeOnce(
+  email: string,
+  prompt: string,
+  modelId: string,
+  maxTokens: number
+): Promise<string> {
+  const users = await readUsers();
+  const user = users.find((u) => u.email === email);
+  if (!user) throw new Error("User not found");
+  if (!user.history) user.history = [];
+  // console.log("user history:", user.history);
+  
+  const history = user.history;
+  history.push({ role: "user", content: prompt });
+
+  const response = await anthropic.messages.create({
+    model: modelId,
+    max_tokens: maxTokens,
+    messages: history,
+  });
+
+  const assistantText = response.content[0]?.text ?? "";
+  history.push({ role: "assistant", content: assistantText });
+  await writeUsers(users);
+
+  return assistantText.trim();
+}

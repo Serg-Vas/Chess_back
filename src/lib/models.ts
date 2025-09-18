@@ -13,22 +13,22 @@ export const models: Model[] = [
   },
   {
     id: "claude-opus-4-20250514",
-    inputPrice: 75,
-    outputPrice: 15,
+    outputPrice: 75,
+    inputPrice: 15,
   },
   {
     id: "claude-sonnet-4-20250514",
-    inputPrice: 15,
-    outputPrice: 3,
+    outputPrice: 15,
+    inputPrice: 3,
   },
   {
     id: "claude-3-7-sonnet-20250219",
-    inputPrice: 15,
-    outputPrice: 3,
+    outputPrice: 15,
+    inputPrice: 3,
   },
   {
     id: "claude-3-5-haiku-20241022",
-    inputPrice: 1.25,
-    outputPrice: 0.25,
+    outputPrice: 1.25,
+    inputPrice: 0.25,
   },
 ];
