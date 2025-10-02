@@ -28,3 +28,32 @@ curl https://api.anthropic.com/v1/messages \
 }'
 ### usage.input_tokens
 ### usage.output_tokens
+
+curl http://localhost:11434/api/generate -d '{
+  "model": "deepseek-r1:1.5b",
+  "prompt": "Why is the sky blue?"
+}'
+
+### Анализ начальной позиции (без ходов)
+POST http://localhost:3000/api/analyze
+Content-Type: application/json
+
+{
+  "moves": []
+}
+
+### Анализ после e2e4 e7e5
+POST http://localhost:3000/api/analyze
+Content-Type: application/json
+
+{
+  "moves": ["e2e4", "e7e5"]
+}
+
+### Анализ после e2e4 c5 (сицилианка)
+POST http://localhost:3000/api/analyze
+Content-Type: application/json
+
+{
+  "moves": ["e2e4", "c7c5"]
+}
