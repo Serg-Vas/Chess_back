@@ -1,0 +1,42 @@
+[
+  {
+    "ply": 0,
+    "move": null,
+    "eval": 0.39
+  },
+  {
+    "ply": 1,
+    "move": "e2e4",
+    "eval": -0.43
+  },
+  {
+    "ply": 2,
+    "move": "e7e5",
+    "eval": 0.31
+  },
+  {
+    "ply": 3,
+    "move": "d1f3",
+    "eval": 0.34
+  },
+  {
+    "ply": 4,
+    "move": "b8a6",
+    "eval": 0.85
+  },
+  {
+    "ply": 5,
+    "move": "f1c4",
+    "eval": -0.42
+  },
+  {
+    "ply": 6,
+    "move": "b7b6",
+    "eval": "M1"
+  },
+  {
+    "ply": 7,
+    "move": "f3f7",
+    "eval": "M0"
+  }
+]
