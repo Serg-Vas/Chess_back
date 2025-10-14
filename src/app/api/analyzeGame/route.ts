@@ -9,70 +9,80 @@ const enginePath = path.join(
   "stockfish-windows-x86-64-avx2.exe"
 );
 
-// Функция для анализа партии
-async function analyzeGame(moves: string[]): Promise<any[]> {
+// Функция для анализа одной позиции
+async function getBestMoveForPosition(moves: string[]): Promise<{ bestMove: string; score: string }> {
   return new Promise((resolve, reject) => {
-    const stockfish = spawn(enginePath);
-    let results: any[] = [];
-    let index = 0;
+    const engine = spawn(enginePath);
 
-    const sendCommand = (cmd: string) => {
-      stockfish.stdin.write(cmd + "\n");
-    };
+    let bestMove = "";
+    let score: string | undefined;
+    let outputBuffer = "";
 
-    const analyzeNext = () => {
-      if (index > moves.length) {
-        stockfish.kill();
-        return resolve(results);
+    engine.stdout.on("data", (data) => {
+      const text = data.toString();
+      outputBuffer += text;
+
+      // Парсим оценку позиции
+      const scoreMatch = text.match(/score (cp|mate) (-?\d+)/);
+      if (scoreMatch) {
+        if (scoreMatch[1] === "cp") {
+          score = (parseInt(scoreMatch[2], 10) / 100).toFixed(2);
+        } else {
+          score = `Mate in ${scoreMatch[2]}`;
+        }
       }
 
-      // позиция до хода index
-      const pos = "position startpos moves " + moves.slice(0, index).join(" ");
-      sendCommand(pos);
-      sendCommand("go depth 15"); // глубину можно регулировать
+      // Парсим лучший ход
+      const match = text.match(/bestmove\s([a-h][1-8][a-h][1-8][qrbn]?)/);
+      if (match) {
+        bestMove = match[1];
+        engine.stdin.write("quit\n");
+      }
+    });
 
-      let buffer = "";
-      stockfish.stdout.on("data", (data) => {
-        buffer += data.toString();
+    engine.stderr.on("data", (data) => {
+      console.error("Stockfish error:", data.toString());
+    });
 
-        if (buffer.includes("bestmove")) {
-          const lines = buffer.trim().split("\n");
-          let score: number | string = 0;
+    engine.on("close", () => {
+      if (bestMove) {
+        resolve({ bestMove, score: score ?? "N/A" });
+      } else {
+        reject(new Error("No best move found. Output: " + outputBuffer));
+      }
+    });
 
-          for (let line of lines) {
-            if (line.includes("score")) {
-              const match = line.match(/score (cp|mate) (-?\d+)/);
-              if (match) {
-                if (match[1] === "cp") {
-                  score = parseInt(match[2]) / 100.0; // в пешках
-                } else {
-                  score = "M" + match[2]; // мат
-                }
-              }
-            }
-          }
+    // UCI init
+    engine.stdin.write("uci\n");
+    engine.stdin.write("isready\n");
 
-          results.push({
-            ply: index,
-            move: moves[index - 1] || null,
-            eval: score,
-          });
+    // Позиція для цієї частини гри
+    if (moves.length > 0) {
+      engine.stdin.write(`position startpos moves ${moves.join(" ")}\n`);
+    } else {
+      engine.stdin.write("position startpos\n");
+    }
 
-          buffer = "";
-          stockfish.stdout.removeAllListeners("data");
-          index++;
-          analyzeNext();
-        }
-      });
-    };
-
-    // Инициализация движка
-    sendCommand("uci");
-    sendCommand("ucinewgame");
-    sendCommand("isready");
-
-    analyzeNext();
+    engine.stdin.write("go depth 15\n");
   });
+}
+
+// Функція для аналізу всієї партії
+async function analyzeGame(moves: string[]): Promise<any[]> {
+  const results: any[] = [];
+
+  for (let i = 0; i <= moves.length; i++) {
+    const movesSoFar = moves.slice(0, i);
+    const result = await getBestMoveForPosition(movesSoFar);
+    results.push({
+      ply: i,
+      move: moves[i - 1] || null,
+      eval: result.score,
+      bestMove: result.bestMove,
+    });
+  }
+
+  return results;
 }
 
 export async function GET(req: NextRequest) {

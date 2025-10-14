@@ -36,12 +36,12 @@ async function getBestMove(moves: string[]): Promise<{ bestMove: string; score: 
       const text = data.toString();
       outputBuffer += text;
 
-      // Парсим оценку позиции (берём последнее значение перед bestmove)
+      // Парсим оценку позиции
       const scoreMatch = text.match(/score (cp|mate) (-?\d+)/);
       if (scoreMatch) {
         if (scoreMatch[1] === "cp") {
           const cp = parseInt(scoreMatch[2], 10);
-          score = (cp / 100).toFixed(2); // переводим в пешки
+          score = (cp / 100).toFixed(2);
         } else if (scoreMatch[1] === "mate") {
           score = `Mate in ${scoreMatch[2]}`;
         }
@@ -72,10 +72,13 @@ async function getBestMove(moves: string[]): Promise<{ bestMove: string; score: 
     engine.stdin.write("uci\n");
     engine.stdin.write("isready\n");
 
-    // Устанавливаем позицию
-    engine.stdin.write(`position startpos moves ${moves.join(" ")}\n`);
+    // 🔥 Если ходов нет — просто startpos
+    if (moves.length > 0) {
+      engine.stdin.write(`position startpos moves ${moves.join(" ")}\n`);
+    } else {
+      engine.stdin.write("position startpos\n");
+    }
 
-    // Попросим лучший ход
     engine.stdin.write("go depth 15\n");
   });
 }
