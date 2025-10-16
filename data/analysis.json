@@ -4,5 +4,35 @@
     "move": null,
     "eval": "0.39",
     "bestMove": "e2e4"
+  },
+  {
+    "ply": 1,
+    "move": "e2e4",
+    "eval": "-0.35",
+    "bestMove": "e7e5"
+  },
+  {
+    "ply": 2,
+    "move": "d7d5",
+    "eval": "0.61",
+    "bestMove": "e4d5"
+  },
+  {
+    "ply": 3,
+    "move": "e4d5",
+    "eval": "-0.69",
+    "bestMove": "g8f6"
+  },
+  {
+    "ply": 4,
+    "move": "e7e6",
+    "eval": "1.29",
+    "bestMove": "f1b5"
+  },
+  {
+    "ply": 5,
+    "move": "d5e6",
+    "eval": "-1.26",
+    "bestMove": "c8e6"
   }
 ]
