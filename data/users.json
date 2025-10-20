@@ -2,7 +2,20 @@
   {
     "email": "qwerty@qwerty",
     "password": "qwerty",
+    "history": []
+  },
+  {
+    "email": "qwerty1@qwerty",
+    "password": "qwerty1",
     "history": [
+      {
+        "role": "user",
+        "content": "hi"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello! How are you doing today? Is there anything I can help you with?"
+      }
     ]
   }
 ]

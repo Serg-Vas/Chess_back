@@ -22,6 +22,23 @@ export interface GameState {
   turn: Color;
   moves: Move[];
   result?: "1-0" | "0-1" | "1/2-1/2" | null;
+  captured?: {
+    white: string[];
+    black: string[];
+  };
+  points?: {
+    white: number;
+    black: number;
+  };
+  isCheck?: boolean;
+  isCheckmate?: boolean;
+  isDraw?: boolean;
+  moveHistory?: string[];
+  lastMove?: Move;
+  timeControl?: {
+    white: number;
+    black: number;
+  };
 }
 
 // Used when communicating with backend

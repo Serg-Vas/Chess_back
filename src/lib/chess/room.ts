@@ -1,4 +1,5 @@
 import { Player, GameState } from "./types";
+import { Chess } from "chess.js";
 
 export interface Room {
   id: string;
@@ -6,23 +7,104 @@ export interface Room {
   game: GameState;
   createdAt: number;
   lastMoveAt?: number;
+  status: RoomStatus;
+  spectators?: string[]; // Array of spectator socket IDs
+  chat?: ChatMessage[];
 }
 
-export function createRoom(id: string, white: Player, black: Player): Room {
+export interface ChatMessage {
+  playerId: string;
+  username: string;
+  message: string;
+  timestamp: number;
+}
+
+export enum RoomStatus {
+  WAITING_FOR_PLAYERS = "waiting_for_players",
+  WAITING_FOR_START = "waiting_for_start",
+  IN_PROGRESS = "in_progress",
+  FINISHED = "finished",
+  ABANDONED = "abandoned"
+}
+
+export function createRoom(id: string): Room {
+  const chess = new Chess();
   return {
     id,
-    players: [white, black],
+    players: [],
     game: {
-      fen: "startpos",
+      fen: chess.fen(),
       turn: "w",
       moves: [],
       result: null,
+      captured: {
+        white: [],
+        black: []
+      },
+      points: {
+        white: 0,
+        black: 0
+      },
+      isCheck: chess.isCheck(),
+      isCheckmate: chess.isCheckmate(),
+      isDraw: chess.isDraw(),
+      moveHistory: [],
     },
     createdAt: Date.now(),
+    status: RoomStatus.WAITING_FOR_PLAYERS,
+    spectators: [],
+    chat: []
   };
+}
+
+export function updateGameState(room: Room, chess: Chess): void {
+  room.game = {
+    ...room.game,
+    fen: chess.fen(),
+    turn: chess.turn() as "w" | "b",
+    isCheck: chess.isCheck(),
+    isCheckmate: chess.isCheckmate(),
+    isDraw: chess.isDraw(),
+    result: getGameResult(chess)
+  };
+  room.lastMoveAt = Date.now();
+  
+  if (room.game.isCheckmate || room.game.isDraw) {
+    room.status = RoomStatus.FINISHED;
+  }
+}
+
+function getGameResult(chess: Chess): "1-0" | "0-1" | "1/2-1/2" | null {
+  if (chess.isCheckmate()) {
+    return chess.turn() === 'w' ? '0-1' : '1-0';
+  }
+  if (chess.isDraw()) {
+    return '1/2-1/2';
+  }
+  return null;
 }
 
 export function getOpponent(room: Room, playerId: string): Player | null {
   return room.players.find(p => p.id !== playerId) || null;
 }
 
+export function addSpectator(room: Room, spectatorId: string): void {
+  if (!room.spectators) {
+    room.spectators = [];
+  }
+  if (!room.spectators.includes(spectatorId)) {
+    room.spectators.push(spectatorId);
+  }
+}
+
+export function addChatMessage(room: Room, playerId: string, username: string, message: string): void {
+  if (!room.chat) {
+    room.chat = [];
+  }
+  room.chat.push({
+    playerId,
+    username,
+    message,
+    timestamp: Date.now()
+  });
+}
