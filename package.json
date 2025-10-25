@@ -5,12 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:socket": "tsx src/server.ts",
+    "dev:socket": "tsx watch src/server.ts",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "server": "node server.js",
-    "ollama": "node ollama.js"
+    "ollama": "node ollama.js",
+    "help": "tsx --help"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.61.0",

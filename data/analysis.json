@@ -4,11 +4,5 @@
     "move": null,
     "eval": "0.39",
     "bestMove": "e2e4"
-  },
-  {
-    "ply": 1,
-    "move": "e2e4",
-    "eval": "-0.35",
-    "bestMove": "e7e5"
   }
 ]

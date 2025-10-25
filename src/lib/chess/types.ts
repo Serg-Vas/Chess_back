@@ -19,8 +19,17 @@ export interface EngineAnalysis {
 // Game state snapshot
 export interface GameState {
   fen: string;
-  turn: Color;
-  moves: Move[];
+  turn: "w" | "b";
+  moves: Move[]; // текущая логическая история партии (минимальный набор)
+
+  /**
+   * NOTE:
+   * moveHistory (с FEN и анализом) можно добавить в будущем,
+   * если появится необходимость в визуализации партии,
+   * графике оценки или возможности перематывать ходы.
+   * Сейчас все клиенты опираются только на moves[].
+   */
+
   result?: "1-0" | "0-1" | "1/2-1/2" | null;
   captured?: {
     white: string[];
@@ -33,13 +42,12 @@ export interface GameState {
   isCheck?: boolean;
   isCheckmate?: boolean;
   isDraw?: boolean;
-  moveHistory?: string[];
-  lastMove?: Move;
   timeControl?: {
     white: number;
     black: number;
   };
 }
+
 
 // Used when communicating with backend
 export interface AnalyzeRequest {

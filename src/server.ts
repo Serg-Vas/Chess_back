@@ -20,10 +20,10 @@ app.prepare().then(() => {
 
   const io = new Server(server, {
     cors: {
-      origin:  [
-      "http://localhost:5173",
-      "https://4bkh9p6p-5173.euw.devtunnels.ms",
-    ],
+      origin: [
+        "http://localhost:5173",
+        "https://4bkh9p6p-5173.euw.devtunnels.ms",
+      ],
       methods: ["GET", "POST"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
@@ -158,7 +158,6 @@ app.prepare().then(() => {
         return;
       }
 
-      // Check if it's the player's turn
       const player = room.players.find(p => p.id === socket.id);
       if (!player || player.color !== room.game.turn) {
         socket.emit("error", "Not your turn");
@@ -172,19 +171,25 @@ app.prepare().then(() => {
           return;
         }
 
-        // Update game state using our helper function
+        // 1️⃣ Обновляем состояние игры (FEN, check, draw, и т.д.)
         updateGameState(room, chessLogic.game);
 
-        // Add the move to history
+        // 2️⃣ Сохраняем историю
         room.game.moves.push({ from, to, promotion });
         room.game.captured = chessLogic.captured;
         room.game.points = chessLogic.points;
-        room.game.lastMove = { from, to, promotion };
 
-        // Broadcast the updated state to all players
-        io.to(roomId).emit("gameState", room.game);
+        // 3️⃣ Получаем последний ход «на лету»
+        const lastMove = room.game.moves.at(-1);
+        console.log("last", lastMove);
+        
+        // 4️⃣ Рассылаем клиентам полное состояние с временным lastMove
+        io.to(roomId).emit("gameState", {
+          ...room.game,
+          lastMove, // ⚡ не сохраняем в состоянии, просто прикладываем к событию
+        });
 
-        // If game is over, broadcast the result and add system message
+        // 5️⃣ Проверяем окончание игры
         if (room.status === RoomStatus.FINISHED) {
           const result = room.game.result;
           let resultMessage = "Game ended in a draw";
@@ -197,13 +202,14 @@ app.prepare().then(() => {
           addChatMessage(room, "system", "System", resultMessage);
           io.to(roomId).emit("gameOver", {
             result: room.game.result,
-            reason: chessLogic.game.isDraw() ? "draw" : "checkmate"
+            reason: chessLogic.game.isDraw() ? "draw" : "checkmate",
           });
         }
       } catch (err) {
         socket.emit("error", "Invalid move");
       }
     });
+
 
     // Handle reconnection
     socket.on("reconnect", (prevSocketId: string) => {

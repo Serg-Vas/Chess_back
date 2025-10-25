@@ -1,4 +1,4 @@
-import { Player, GameState } from "./types";
+import { Player, GameState, Move } from "./types";
 import { Chess } from "chess.js";
 
 export interface Room {
@@ -48,7 +48,6 @@ export function createRoom(id: string): Room {
       isCheck: chess.isCheck(),
       isCheckmate: chess.isCheckmate(),
       isDraw: chess.isDraw(),
-      moveHistory: [],
     },
     createdAt: Date.now(),
     status: RoomStatus.WAITING_FOR_PLAYERS,
@@ -58,21 +57,30 @@ export function createRoom(id: string): Room {
 }
 
 export function updateGameState(room: Room, chess: Chess): void {
+  // Preserve previous values before overwriting
+  const prevGame = room.game;
+
   room.game = {
-    ...room.game,
+    ...prevGame,
     fen: chess.fen(),
     turn: chess.turn() as "w" | "b",
     isCheck: chess.isCheck(),
     isCheckmate: chess.isCheckmate(),
     isDraw: chess.isDraw(),
-    result: getGameResult(chess)
+    result: getGameResult(chess),
+    // keep lastMove, captured, and points if already set elsewhere
+    // lastMove: prevGame.lastMove,
+    captured: prevGame.captured,
+    points: prevGame.points,
   };
+
   room.lastMoveAt = Date.now();
-  
+
   if (room.game.isCheckmate || room.game.isDraw) {
     room.status = RoomStatus.FINISHED;
   }
 }
+
 
 function getGameResult(chess: Chess): "1-0" | "0-1" | "1/2-1/2" | null {
   if (chess.isCheckmate()) {
@@ -83,6 +91,10 @@ function getGameResult(chess: Chess): "1-0" | "0-1" | "1/2-1/2" | null {
   }
   return null;
 }
+
+// function getLastMove(game: GameState): Move | undefined {
+//   return game.moves.at(-1);
+// }
 
 export function getOpponent(room: Room, playerId: string): Player | null {
   return room.players.find(p => p.id !== playerId) || null;
