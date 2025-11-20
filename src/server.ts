@@ -210,6 +210,43 @@ app.prepare().then(() => {
       }
     });
 
+    // Allow clients to request loading a new FEN for the room (keeps server state in sync)
+    socket.on("setFen", (data: { roomId: string; fen: string }) => {
+      const { roomId, fen } = data || ({} as any);
+      const room = rooms.get(roomId);
+      const chessLogic = gameInstances.get(roomId);
+
+      if (!room || !chessLogic) {
+        socket.emit("error", "Game not found");
+        return;
+      }
+
+      // Only allow players in the room to set FEN
+      const player = room.players.find(p => p.id === socket.id);
+      if (!player) {
+        socket.emit("error", "Not in room");
+        return;
+      }
+
+      try {
+        // Load the FEN into the server-side chess instance
+        chessLogic.game.load(fen);
+
+        // Update server-side game state (fen, turn, flags)
+        updateGameState(room, chessLogic.game);
+
+        // Persist captured/points from our ChessLogic instance
+        room.game.captured = chessLogic.captured;
+        room.game.points = chessLogic.points;
+
+        // Broadcast updated gameState to all room participants
+        io.to(roomId).emit("gameState", room.game);
+      } catch (err) {
+        console.warn("[setFen] failed to load fen", err);
+        socket.emit("error", "Failed to load FEN");
+      }
+    });
+
 
     // Handle reconnection
     socket.on("reconnect", (prevSocketId: string) => {
@@ -255,6 +292,49 @@ app.prepare().then(() => {
       });
     });
 
+    // Handle explicit logout (immediate leave + disconnect)
+    socket.on("logout", () => {
+      console.log("Socket requested logout:", socket.id);
+      const roomId = playerRooms.get(socket.id);
+      if (roomId) {
+        const room = rooms.get(roomId);
+        if (room) {
+          const playerIndex = room.players.findIndex(p => p.id === socket.id);
+          if (playerIndex !== -1) {
+            room.players.splice(playerIndex, 1);
+            playerRooms.delete(socket.id);
+
+            // Notify remaining players
+            if (room.players.length > 0) {
+              io.to(roomId).emit("playerLeft", socket.id);
+            } else {
+              // No players left — remove room and game instance
+              rooms.delete(roomId);
+              gameInstances.delete(roomId);
+            }
+          }
+        }
+      }
+
+      try {
+        socket.emit("loggedOut");
+      } catch (e) {}
+
+      try {
+        // Leave all joined rooms (iterate because leaveAll is internal in types)
+        const roomsToLeave = Array.from(socket.rooms || []);
+        for (const r of roomsToLeave) {
+          try {
+            socket.leave(r);
+          } catch (e) {}
+        }
+      } catch (e) {}
+
+      try {
+        socket.disconnect(true);
+      } catch (e) {}
+    });
+
     // Add rematch functionality
     socket.on("requestRematch", (roomId: string) => {
       const room = rooms.get(roomId);
@@ -282,7 +362,6 @@ app.prepare().then(() => {
             result: null,
             captured: chessLogic.captured,
             points: chessLogic.points,
-            lastMove: undefined,
             isCheck: false,
             isCheckmate: false,
             isDraw: false
